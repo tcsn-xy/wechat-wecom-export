@@ -4,6 +4,9 @@ import json
 from pathlib import Path
 import subprocess
 import sys
+import shutil
+from unittest.mock import patch
+import build_skill
 import tempfile
 import unittest
 import zipfile
@@ -40,3 +43,19 @@ class StandalonePackage(unittest.TestCase):
             third=subprocess.run(command,capture_output=True,text=True)
             self.assertNotEqual(third.returncode,0)
             self.assertEqual((target/'lib/wecom/cdp.py').read_bytes(),original+b'\n# local change\n')
+
+    def test_archive_hash_does_not_depend_on_local_umask(self):
+        with tempfile.TemporaryDirectory(prefix='normalized package ') as tmp:
+            root=Path(tmp)/'source';root.mkdir()
+            manifest=json.loads((build_skill.ROOT/'release-manifest.json').read_text())
+            for name in manifest:
+                destination=root/name;destination.parent.mkdir(parents=True,exist_ok=True)
+                shutil.copy2(build_skill.ROOT/name,destination)
+                destination.chmod(0o700 if destination.stat().st_mode & 0o100 else 0o600)
+            with patch.object(build_skill,'ROOT',root):
+                private_modes=build_skill.build(Path(tmp)/'private-modes')
+                for name in manifest:
+                    destination=root/name
+                    destination.chmod(0o755 if destination.stat().st_mode & 0o100 else 0o644)
+                git_modes=build_skill.build(Path(tmp)/'git-modes')
+            self.assertEqual(private_modes['sha256'],git_modes['sha256'])

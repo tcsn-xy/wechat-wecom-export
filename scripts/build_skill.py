@@ -43,7 +43,9 @@ def build(output, install_to=None):
             for path in sorted(skill.rglob('*')):
                 if not path.is_file():continue
                 item=zipfile.ZipInfo(str(path.relative_to(skill.parent)),date_time=(2026,1,1,0,0,0))
-                item.external_attr=(path.stat().st_mode&0o777)<<16
+                # Git stores only the executable bit; normalize away local umask.
+                mode=0o755 if path.stat().st_mode & 0o100 else 0o644
+                item.external_attr=mode<<16
                 item.compress_type=zipfile.ZIP_DEFLATED;zipped.writestr(item,path.read_bytes())
         if scan_zip(temporary,[]):temporary.unlink();raise ValueError('Packaged privacy scan failed')
         temporary.replace(archive)
