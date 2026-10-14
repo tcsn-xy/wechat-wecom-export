@@ -6,11 +6,11 @@ import subprocess
 import sys
 import shutil
 from unittest.mock import patch
-import build_skill
 import tempfile
 import unittest
 import zipfile
 import fixtures
+import build_skill
 from build_skill import build
 
 
