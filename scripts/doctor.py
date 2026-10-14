@@ -193,7 +193,7 @@ def check_invariants(p):
 
     这些每一条都对应一个踩过的坑，破坏任何一条都说明老 bug 回来了。
     """
-    print("\n【6】导出不变量（对应 AGENTS.md 第 8 节）")
+    print("\n【6】导出不变量（对应公开开发约束）")
     import csv
     E = p.export
     rooms = sorted(os.listdir(os.path.join(E, "群聊"))) \
@@ -397,7 +397,7 @@ def main():
     if ok and snap and exp and inv:
         print("  一切正常。打开 %s 查看结果。" % os.path.join(p.export, "index.html"))
     else:
-        print("  有问题需要处理，见 docs/排错.md 与 AGENTS.md")
+        print("  有问题需要处理，见 docs/troubleshooting.md 与 AGENTS.md")
     print("=" * 64)
     return 0 if ok and snap and exp and inv else 1
 
