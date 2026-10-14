@@ -1,0 +1,37 @@
+name: Synthetic regression
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  synthetic:
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: synthetic-ci-only
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=12
+    env:
+      WX_MYSQL_USER: root
+      WX_MYSQL_PASSWORD: synthetic-ci-only
+      WX_MYSQL_HOST: 127.0.0.1
+      WX_MYSQL_PORT: 3306
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install -r requirements.txt
+      - run: python -B -m unittest discover -s tests -v
+      - run: python -B scripts/wecom_selftest.py
+      - run: python -B scripts/isolated_validation.py --report .runtime/validation/report.md
+      - run: python scripts/privacy_scan.py --directory . --git-history
+      - run: python scripts/build_skill.py

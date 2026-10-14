@@ -1,0 +1,4 @@
+interface:
+  display_name: "微信与企业微信导出部署"
+  short_description: "完整脚本部署本机双平台读取、MySQL 入库、媒体保存与可选图片描述"
+  default_prompt: "使用 $wechat-wecom-export 在本机部署并验证微信与企业微信读取、入库和同步。"

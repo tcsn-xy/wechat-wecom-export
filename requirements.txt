@@ -1,0 +1,8 @@
+sqlcipher3>=0.5.4,<1; sys_platform == 'darwin'
+sqlcipher3-binary>=0.5.4,<1; sys_platform != 'darwin'
+zstandard>=0.23,<1
+pycryptodome>=3.21,<4
+Pillow>=11,<13
+av>=14,<19
+PyMySQL>=1.1,<3
+silk-python>=0.2.8,<0.3
