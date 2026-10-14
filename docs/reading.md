@@ -21,7 +21,7 @@
 ./.venv/bin/python scripts/wecom_recent.py --no-snapshot
 ```
 
-用 `--app /path/to/企业微信.app` 指定非标准安装位置。初次操作可能需要登录，脚本不会代替你退出正在运行的企业微信。不要删除捕获产物，除非已确认持久 key 可用且不再需要排查。
+用 `--app /path/to/企业微信.app` 指定非标准安装位置。初次操作可能需要登录，脚本不会代替你退出正在运行的企业微信。不要删除持久密钥文件，除非已确认不再需要；临时内存镜像由抓取流程清理。
 
 企微数据库采用 wxSQLite3 AES-128 分页加密，不是 SQLCipher；解密会合并已提交 WAL，再验证 SQLite。数据库账号与媒体 Profiles 目录是不同 ID 命名空间，多账号映射不明时需在本地 raw 快照设置 `_profile_accounts.json`，格式 `{数据库账号ID:媒体档案目录名}`；不跨账号合并。
 
@@ -29,11 +29,13 @@
 
 ```bash
 # 首次抓密钥需要管理员权限，会退出当前微信并启动重签副本，按提示登录
-sudo ./.venv/bin/python scripts/capture_keys.py --switch-copy
-# 运行副本时拉取快照
-sudo ./.venv/bin/python scripts/clone_data.py
-# 若客户端已退出且本机权限允许，可以用直读入口
+sudo ./.venv/bin/python scripts/capture_keys.py --keep-copy
+# 抓取结束会退出副本；此时可先尝试直读快照
 ./.venv/bin/python scripts/clone_data_local.py
+# 如需日常运行副本，单独启用并按提示登录；此命令不抓密钥
+./.venv/bin/python scripts/capture_keys.py --switch-copy
+# 当前已登录副本运行时拉取快照
+sudo ./.venv/bin/python scripts/clone_data.py
 ./.venv/bin/python scripts/export_all.py
 ./.venv/bin/python scripts/doctor.py --links --invariants
 ./.venv/bin/python scripts/recent.py --list

@@ -109,6 +109,7 @@
   "skills/wechat-wecom-export/scripts/run.py",
   "tests/fixtures.py",
   "tests/test_caption_concurrency.py",
+  "tests/test_key_capture_privacy.py",
   "tests/test_local_config.py",
   "tests/test_media_files.py",
   "tests/test_packaging.py",

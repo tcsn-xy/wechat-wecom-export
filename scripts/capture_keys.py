@@ -122,6 +122,7 @@ def switch_copy(app: str, force_resign: bool = False, lock: bool = True) -> int:
 
 
 def main():
+    os.umask(0o077)
     ap = argparse.ArgumentParser(description="抓取微信数据库密钥")
     ap.add_argument("--seconds", type=int, default=180,
                     help="监听的时长；期间需要在微信里点几下（登录/进聊天）")
@@ -152,6 +153,8 @@ def main():
     os.makedirs(RUNTIME, exist_ok=True)
     os.makedirs(config.KEYS, exist_ok=True)
     capture = os.path.join(config.KEYS, "capture.jsonl")
+    if os.path.exists(capture):
+        os.chmod(capture, 0o600)
 
     # ---------------------------------------------------------------- #
     print("\n[1/5] 复制一份微信（原版不动）")

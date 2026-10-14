@@ -210,7 +210,7 @@ def capture(seconds: int, page_one: bytes, page_path: str) -> bytes | None:
 
     for k in uniq:
         if crypto.verify_key(k, page_one):
-            print("   ✅ 命中：%s（对 %s 校验通过）" % (k.hex(), page_path))
+            print("   ✅ 找到有效密钥（第一页校验通过；密钥值不输出）")
             return k
     if uniq:
         print("   候选都没通过校验（可能是别的库的 key）")
@@ -219,6 +219,7 @@ def capture(seconds: int, page_one: bytes, page_path: str) -> bytes | None:
 
 # --------------------------------------------------------------------------- #
 def main():
+    os.umask(0o077)
     ap = argparse.ArgumentParser(description="抓企业微信数据库 raw key")
     ap.add_argument("--app", default="", help="企业微信 App 路径")
     ap.add_argument("--seconds", type=int, default=180, help="抓取时长")
@@ -290,7 +291,8 @@ def main():
             print("   关闭副本 pid=%d" % pid)
             subprocess.run(["kill", "-TERM", str(pid)])
         print("   现在可以重新打开原来的企业微信了。")
-    print("\n下一步： ./.venv/bin/python scripts/wecom_all.py")
+    print("\n下一步： ./.venv/bin/python lib/wecom/extract.py")
+    print("然后： ./.venv/bin/python scripts/wecom_export.py")
 
 
 if __name__ == "__main__":
